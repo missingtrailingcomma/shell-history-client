@@ -1,0 +1,30 @@
+# Bazel-specific files
+.bazel-*
+
+# Build output directories
+bazel-*
+
+# Bazel cache directories
+bazel-out/
+
+# Bazel generated files
+*.bazel
+
+# Bazel build logs
+*.log
+
+# Bazel lock files
+BUILD.bazel.lock
+MODULE.bazel.lock
+
+# Bazel toolchain configuration files
+.bazelrc
+
+# Bazel workspace status file
+WORKSPACE.bazelversion
+
+# Exclude directories and files containing build artifacts
+bin/
+genfiles/
+external/
+tools/
