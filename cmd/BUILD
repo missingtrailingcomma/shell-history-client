@@ -2,8 +2,15 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "cmd",
-    srcs = ["create.go"],
+    srcs = [
+        "create.go",
+        "web_portal.go",
+    ],
+    data = ["//web_portal"],
     importpath = "shell_history_client/cmd",
     visibility = ["//visibility:public"],
-    deps = ["//data"],
+    deps = [
+        "//data",
+        "@io_bazel_rules_go//go/tools/bazel:go_default_library",
+    ],
 )

@@ -51,6 +51,10 @@ func main() {
 		if err := cmd.Create(input); err != nil {
 			log.Fatalf("cmd.Create(): %v", err)
 		}
+	case "web_portal":
+		if err := cmd.WebPortal(input); err != nil {
+			log.Fatalf("cmd.WebPortal(): %v", err)
+		}
 	default:
 		log.Fatalf("mode %v not supported", *mode)
 	}

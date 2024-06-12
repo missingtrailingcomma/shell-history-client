@@ -33,3 +33,4 @@ bazel run //:gazelle
 ## Credit
 
 - https://github.com/rcaloras/bashhub-client
+- chatgpt.com
