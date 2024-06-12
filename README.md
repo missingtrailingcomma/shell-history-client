@@ -29,3 +29,7 @@ bazel run //:gazelle
 ## Dependencies
 
 - https://github.com/rcaloras/bash-preexec
+
+## Credit
+
+- https://github.com/rcaloras/bashhub-client
