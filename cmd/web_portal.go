@@ -8,13 +8,22 @@ import (
 	"path"
 	"shell_history_client/data"
 	"text/template"
+	"time"
 
 	"github.com/bazelbuild/rules_go/go/tools/bazel"
 )
 
-type PageData struct {
-	Title  string
-	Inputs []data.Input
+type row struct {
+	ExecutionStatus  int
+	ExecutionTimeStr string
+	CommandText      string
+
+	Raw data.Input
+}
+
+type pageData struct {
+	Title string
+	Rows  []row
 }
 
 // TODO: change to take in context
@@ -33,8 +42,18 @@ func WebPortal(input data.Input) error {
 				log.Fatalf("json.Unmarshal(): %v", err)
 			}
 		}
+	}
 
-		inputs = append(inputs, input)
+	var rows []row
+	for _, input := range inputs {
+		convertedTime := input.CommandInput.ExecutionTime.AsTime()
+
+		rows = append(rows, row{
+			ExecutionStatus:  input.CommandInput.ExecutionStatus,
+			ExecutionTimeStr: convertedTime.Format(time.RFC3339Nano),
+			CommandText:      input.CommandInput.CommandText,
+			Raw:              input,
+		})
 	}
 
 	// Handle root URL
@@ -53,9 +72,9 @@ func WebPortal(input data.Input) error {
 		}
 
 		// Data to pass to the template
-		data := PageData{
-			Title:  "Gummy Bear 🍬🐻",
-			Inputs: inputs,
+		data := pageData{
+			Title: "Gummy Bear 🍬🐻",
+			Rows:  rows,
 		}
 
 		// Execute the template with the data
@@ -66,7 +85,7 @@ func WebPortal(input data.Input) error {
 	})
 
 	// Start the HTTP server
-	log.Println("Server started on localhost:8080")
+	log.Println("Server started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	return nil

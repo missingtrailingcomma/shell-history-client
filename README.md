@@ -11,6 +11,13 @@ TODO
 ## Dev
 
 ```sh
+mkdir -p $HOME/.yak1_gummybear
+touch $HOME/.yak1_gummybear/cmd_cache.json
+
+SHELL_HISTORY_CLIENT_DEBUG=1
+```
+
+```sh
 bazel build //:shell-history-client && source shell-history-client.sh
 ```
 

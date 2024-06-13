@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"log"
 	"os/user"
+	"time"
 
 	"shell_history_client/cmd"
 	"shell_history_client/data"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -26,6 +29,11 @@ var (
 func main() {
 	flag.Parse()
 
+	// Get current time ASAP to proximate execution time.
+	// Since there's no way to get execution time in shell in macOS natively,
+	// obtain the time in binary instead.
+	currentTime := time.Now()
+
 	user, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
@@ -37,6 +45,7 @@ func main() {
 			CommandText:     *commandText,
 			ExecutionStatus: *executionStatus,
 			WorkingDir:      *workingDir,
+			ExecutionTime:   timestamppb.New(currentTime),
 			Pid:             *pid,
 			Ppid:            *ppid,
 		},

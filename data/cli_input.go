@@ -1,6 +1,10 @@
 package data
 
-import "os/user"
+import (
+	"os/user"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
 
 type Input struct {
 	CommandInput CommandInput
@@ -12,7 +16,7 @@ type CommandInput struct {
 	CommandText     string
 	ExecutionStatus int
 	WorkingDir      string
-	ExecutionTime   string // TODO change to timestamp
+	ExecutionTime   *timestamppb.Timestamp
 	Pid             int
 	Ppid            int
 }
