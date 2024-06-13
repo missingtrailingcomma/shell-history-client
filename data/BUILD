@@ -8,5 +8,4 @@ go_library(
     ],
     importpath = "shell_history_client/data",
     visibility = ["//visibility:public"],
-    deps = ["@org_golang_google_protobuf//types/known/timestamppb"],
 )

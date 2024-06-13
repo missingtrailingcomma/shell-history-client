@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package shell_history_client.proto;
+
+option go_package = "shell_history_client/proto";
+
+import "google/protobuf/timestamp.proto";
+
+message CommandList { repeated Command commands = 1; }
+
+message Command {
+  string id = 1;
+  string text = 2;
+  int32 execution_status = 3;
+  google.protobuf.Timestamp execution_time = 4;
+  int32 pid = 5;
+  int32 ppid = 6;
+  Environment env = 7;
+}
+
+message Environment {
+  User user = 1;
+  string working_directory = 2;
+  bool debug = 3;
+}
+
+message User {
+  string username = 1;
+  string name = 2;
+}

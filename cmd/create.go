@@ -1,55 +1,58 @@
 package cmd
 
 import (
-	"encoding/json"
-	"log"
+	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"shell_history_client/data"
+
+	"google.golang.org/protobuf/encoding/prototext"
+
+	pb "shell_history_client/proto"
 )
 
-func Create(input data.Input) error {
-	inputCacheFilePath := path.Join(input.ContextInfo.User.HomeDir, data.DOTFILE_FOLDER, data.INPUT_CACHE_FILE)
+func Create(env data.EnvInfo, cmd *pb.Command) error {
+	inputCacheFilePath := path.Join(env.User.HomeDir, data.DOTFILE_FOLDER, data.INPUT_CACHE_FILE)
 
-	var inputs []data.Input
-	if fileExists(inputCacheFilePath) {
-		inputCache, err := os.ReadFile(inputCacheFilePath)
-		if err != nil {
-			log.Fatalf("io.ReadAll(%q): %v", inputCacheFilePath, err)
-		}
+	// cmdList := pb.CommandList{}
 
-		if string(inputCache) != "" {
-			if err := json.Unmarshal(inputCache, &inputs); err != nil {
-				log.Fatalf("json.Unmarshal(): %v", err)
-			}
-		}
+	// // Read existing commands.
+	// if fileExists(inputCacheFilePath) {
+	// 	inputCache, err := os.ReadFile(inputCacheFilePath)
+	// 	if err != nil {
+	// 		log.Fatalf("io.ReadAll(%q): %v", inputCacheFilePath, err)
+	// 	}
 
-		inputs = append(inputs, input)
-	}
+	// 	if string(inputCache) != "" {
+	// 		if err := proto.Unmarshal(inputCache, &cmdList); err != nil {
+	// 			log.Fatalf("proto.Unmarshal(): %v", err)
+	// 		}
+	// 	}
+	// }
 
-	jsonData, err := json.Marshal(inputs)
+	// // Add the latest command.
+	// cmdList.Commands = append(cmdList.Commands, cmd)
+
+	// Add to file.
+	f, err := os.OpenFile(inputCacheFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatalf("Error marshalling struct to JSON: %v", err)
-	}
-
-	f, err := os.OpenFile(inputCacheFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		log.Fatalf("fail to open file: %v", err)
+		return fmt.Errorf("os.OpenFile(%q): %v", inputCacheFilePath, err)
 	}
 	defer f.Close()
 
-	if _, err := f.Write(jsonData); err != nil {
-		log.Fatalf("f.Write(): %v", err)
+	mo := &prototext.MarshalOptions{
+		Indent: strings.Repeat(" ", 2),
+	}
+
+	pbtxt, err := mo.Marshal(&pb.CommandList{Commands: []*pb.Command{cmd}})
+	if err != nil {
+		return fmt.Errorf("prototext.MarshalOptions.Marshal(): %v", err)
+	}
+	if _, err := f.Write(pbtxt); err != nil {
+		return fmt.Errorf("f.Write(toWrite): %v", err)
 	}
 
 	return nil
-}
-
-func fileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return err == nil
 }

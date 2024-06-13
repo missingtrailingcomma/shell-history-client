@@ -18,7 +18,7 @@ __preexec_hook() {
     fi
     
     # TODO: can we use `RUNFILES` here?
-    bazel-bin/shell_history_client_/shell_history_client --mode=create \
+    dist/gummybear -mode=create \
         -command_id=$__command_id \
         -command_text=$1 \
         -working_dir=$PWD \

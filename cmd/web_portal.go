@@ -1,71 +1,71 @@
 package cmd
 
 import (
-	"encoding/json"
+	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path"
 	"shell_history_client/data"
-	"text/template"
 	"time"
 
-	"github.com/bazelbuild/rules_go/go/tools/bazel"
+	"google.golang.org/protobuf/encoding/prototext"
+
+	pb "shell_history_client/proto"
 )
-
-type row struct {
-	ExecutionStatus  int
-	ExecutionTimeStr string
-	CommandText      string
-
-	Raw data.Input
-}
 
 type pageData struct {
 	Title string
 	Rows  []row
 }
 
-// TODO: change to take in context
-func WebPortal(input data.Input) error {
-	inputCacheFilePath := path.Join(input.ContextInfo.User.HomeDir, data.DOTFILE_FOLDER, data.INPUT_CACHE_FILE)
+type row struct {
+	ExecutionStatus  int
+	ExecutionTimeStr string
+	CommandText      string
 
-	var inputs []data.Input
+	Command *pb.Command
+}
+
+func WebPortal(env data.EnvInfo) error {
+	inputCacheFilePath := path.Join(env.User.HomeDir, data.DOTFILE_FOLDER, data.INPUT_CACHE_FILE)
+
+	cmdList := pb.CommandList{}
+
+	// Read existing commands.
 	if fileExists(inputCacheFilePath) {
 		inputCache, err := os.ReadFile(inputCacheFilePath)
 		if err != nil {
-			log.Fatalf("io.ReadAll(%q): %v", inputCacheFilePath, err)
+			return fmt.Errorf("io.ReadAll(%q): %v", inputCacheFilePath, err)
 		}
 
 		if string(inputCache) != "" {
-			if err := json.Unmarshal(inputCache, &inputs); err != nil {
-				log.Fatalf("json.Unmarshal(): %v", err)
+			uo := prototext.UnmarshalOptions{
+				DiscardUnknown: true,
+			}
+
+			if err := uo.Unmarshal(inputCache, &cmdList); err != nil {
+				return fmt.Errorf("proto.Unmarshal(): %v", err)
 			}
 		}
 	}
 
 	var rows []row
-	for _, input := range inputs {
-		convertedTime := input.CommandInput.ExecutionTime.AsTime()
+	for _, cmd := range cmdList.Commands {
+		convertedTime := cmd.ExecutionTime.AsTime()
 
 		rows = append(rows, row{
-			ExecutionStatus:  input.CommandInput.ExecutionStatus,
+			ExecutionStatus:  int(cmd.ExecutionStatus),
 			ExecutionTimeStr: convertedTime.Format(time.RFC3339Nano),
-			CommandText:      input.CommandInput.CommandText,
-			Raw:              input,
+			CommandText:      cmd.Text,
+			Command:          cmd,
 		})
 	}
 
 	// Handle root URL
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Parse the template file
-
-		runfilesPath, err := bazel.RunfilesPath()
-		if err != nil {
-			log.Fatalf("Could not locate data file: %v", err)
-		}
-
-		tmpl, err := template.ParseFiles(path.Join(runfilesPath, "web_portal/index.html"))
+		tmpl, err := template.ParseFiles("web_portal/index.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -89,4 +89,12 @@ func WebPortal(input data.Input) error {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	return nil
+}
+
+func fileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return err == nil
 }

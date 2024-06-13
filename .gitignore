@@ -28,3 +28,4 @@ bin/
 genfiles/
 external/
 tools/
+dist/

@@ -47,7 +47,7 @@
         </thead>
         <tbody>
             {{ range .Rows }}
-            <tr data-input="{{ .Raw }}">
+            <tr data-input="{{ .Command }}">
                 <td class="{{ if eq .ExecutionStatus 0 }}success-status{{else}}failure-status{{end}}">
                     {{ .ExecutionStatus }}</td>
                 <td class="execution-time">{{ .ExecutionTimeStr }}</td>

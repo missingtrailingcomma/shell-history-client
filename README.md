@@ -21,6 +21,10 @@ SHELL_HISTORY_CLIENT_DEBUG=1
 bazel build //:shell-history-client && source shell-history-client.sh
 ```
 
+```sh
+protoc --proto_path=./ --go_out=paths=source_relative:./ --go-grpc_out=paths=source_relative:./ $(find proto -name "*.proto") 
+```
+
 ### Debug Mode
 
 ```
