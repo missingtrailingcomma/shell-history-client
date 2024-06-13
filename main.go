@@ -4,10 +4,9 @@ import (
 	"flag"
 	"log"
 	"os/user"
-	"time"
-
-	"shell_history_client/cmd" // TODO: rename package name
 	"shell_history_client/data"
+	"shell_history_client/subcommands"
+	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -59,11 +58,11 @@ func main() {
 
 	switch *mode {
 	case "create":
-		if err := cmd.Create(env, command); err != nil {
+		if err := subcommands.Create(env, command); err != nil {
 			log.Fatalf("cmd.Create(): %v", err)
 		}
 	case "web_portal":
-		if err := cmd.WebPortal(env); err != nil {
+		if err := subcommands.WebPortal(env); err != nil {
 			log.Fatalf("cmd.WebPortal(): %v", err)
 		}
 	default:
