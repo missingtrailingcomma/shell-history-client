@@ -20,12 +20,16 @@ var (
 	workingDir = flag.String("working_dir", "", "the working directory the command executes")
 	debug      = flag.Bool("debug", false, "turn on debug mode or not")
 
+	// for mode == create && update
+	commandId = flag.String("command_id", "", "the ID of the command")
+
 	// for mode == create
-	commandId       = flag.String("command_id", "", "the ID of the command")
-	commandText     = flag.String("command_text", "", "the command ran")
-	executionStatus = flag.Int("execution_status", 0, "the execution status of the command")
-	pid             = flag.Int("pid", 0, "the PID of the process")
-	ppid            = flag.Int("ppid", 0, "the PPID of the process")
+	commandText = flag.String("command_text", "", "the command ran")
+	pid         = flag.Int("pid", 0, "the PID of the process")
+	ppid        = flag.Int("ppid", 0, "the PPID of the process")
+
+	// for mode == update
+	executionStatus = flag.Int("execution_status", -1, "the execution status of the command. -1 means the command hasn't finished execution")
 )
 
 func main() {
@@ -60,6 +64,10 @@ func main() {
 	case "create":
 		if err := subcommands.Create(env, command); err != nil {
 			log.Fatalf("cmd.Create(): %v", err)
+		}
+	case "update":
+		if err := subcommands.Update(env, command); err != nil {
+			log.Fatalf("subcommands.Update(): %v", err)
 		}
 	case "web_portal":
 		if err := subcommands.WebPortal(env); err != nil {

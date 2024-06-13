@@ -28,7 +28,13 @@ __preexec_hook() {
 }
 
 __precmd_hook() {
-    local __exit_status="$?"    
+    # store `$?` as the 1st statement to avoid other commands accidently pollute `$?` 
+    local __exit_status="$?"
+
+    dist/gummybear -mode=update \
+        -command_id=$__command_id \
+        -execution_status=$__exit_status
+
     unset __command_id
 }
 

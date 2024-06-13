@@ -25,6 +25,10 @@
             width: 288px;
         }
 
+        .pending-status {
+            background-color: blue;
+        }
+
         .success-status {
             background-color: green;
         }
@@ -48,14 +52,18 @@
         <tbody>
             {{ range .Rows }}
             <tr data-input="{{ .Command }}">
-                <td class="{{ if eq .ExecutionStatus 0 }}success-status{{else}}failure-status{{end}}">
-                    {{ .ExecutionStatus }}</td>
+                <td class="
+                        {{ if eq .ExecutionStatus -1 }}pending-status
+                        {{ else if eq .ExecutionStatus 0 }}success-status
+                        {{ else }}failure-status{{ end }}">
+                    {{ if eq .ExecutionStatus -1 }}...🐢{{ else }}{{ .ExecutionStatus }}{{ end }}
+                </td>
                 <td class="execution-time">{{ .ExecutionTimeStr }}</td>
                 <td class="command-text">
                     <div class="command-text-div">{{ .CommandText }}</div>
                 </td>
             </tr>
-            {{end}}
+            {{ end }}
         </tbody>
     </table>
 </body>
