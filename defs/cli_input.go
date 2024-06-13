@@ -1,4 +1,4 @@
-package data
+package defs
 
 import (
 	"os/user"

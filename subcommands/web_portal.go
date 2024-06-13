@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"shell_history_client/data"
+	"shell_history_client/defs"
 	"time"
 
 	"google.golang.org/protobuf/encoding/prototext"
@@ -28,8 +28,8 @@ type row struct {
 	Command *pb.Command
 }
 
-func WebPortal(env data.EnvInfo) error {
-	inputCacheFilePath := path.Join(env.User.HomeDir, data.DOTFILE_FOLDER, data.INPUT_CACHE_FILE)
+func WebPortal(env defs.EnvInfo) error {
+	inputCacheFilePath := path.Join(env.User.HomeDir, defs.DOTFILE_FOLDER, defs.INPUT_CACHE_FILE)
 
 	cmdList := pb.CommandList{}
 

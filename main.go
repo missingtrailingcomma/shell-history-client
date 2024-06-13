@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 	"os/user"
-	"shell_history_client/data"
+	"shell_history_client/defs"
 	"shell_history_client/subcommands"
 	"time"
 
@@ -41,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	env := data.EnvInfo{
+	env := defs.EnvInfo{
 		User:       user,
 		WorkingDir: *workingDir,
 		Debug:      *debug,

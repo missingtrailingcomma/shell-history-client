@@ -1,4 +1,4 @@
-package data
+package defs
 
 const DOTFILE_FOLDER = ".yak1_gummybear/"
 
