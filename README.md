@@ -10,31 +10,28 @@ TODO
 
 ## Dev
 
+### Setup
+
 ```sh
 mkdir -p $HOME/.yak1_gummybear
-touch $HOME/.yak1_gummybear/cmd_cache.json
 
 SHELL_HISTORY_CLIENT_DEBUG=1
 ```
 
+### Source the latest version shell script
+
 ```sh
-bazel build //:shell-history-client && source shell-history-client.sh
+go build -o dist/gummybear main.go && source shell-history-client.sh
+```
+
+### Serve web portal
+
+```sh
+go run main.go --mode=web_portal
 ```
 
 ```sh
 protoc --proto_path=./ --go_out=paths=source_relative:./ --go-grpc_out=paths=source_relative:./ $(find proto -name "*.proto") 
-```
-
-### Debug Mode
-
-```
-SHELL_HISTORY_CLIENT_DEBUG=1
-```
-
-### Update Golang Deps
-
-```sh
-bazel run //:gazelle
 ```
 
 ## Dependencies
